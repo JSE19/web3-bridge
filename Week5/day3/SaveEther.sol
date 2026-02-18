@@ -5,7 +5,6 @@ pragma solidity ^0.8.3;
 
 contract SaveEther {
 
-    ERC_20 = new erc_20();
     mapping(address => uint256) public balances;
 
     event DepositSuccessful(address indexed sender, uint256 indexed amount);
