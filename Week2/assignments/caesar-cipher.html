@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+
+    <div>
+        <h1>Caesar Cipher</h1>
+        <textarea id="inputText" placeholder="Enter text to encrypt/decrypt"></textarea><br>
+        <input type="number" id="key" placeholder="Key" value="3"><br>
+        <button id="encrypt">Encrypt</button>
+        <button id="decrypt">Decrypt</button><br>
+        <textarea id="outputText" placeholder="Output will appear here"></textarea>
+        </div>
+    
+    <script>
+        const btnEncrypt = document.getElementById('encrypt');
+        const btnDecrypt = document.getElementById('decrypt');
+        const inputText = document.getElementById('inputText');
+        const outputText = document.getElementById('outputText');
+        const keyInput = document.getElementById('key');
+        //AOLYLHYLUVZLJYLAZILAALYAOHUAOLZLJYLAZAOHALCLYFIVKFNBLZZLZ
+        const alphaList = ['a','b','c','d','e','f','g','h','i','j','k','l','m','n','o','p','q','r','s','t','u','v','w','x','y','z'];
+
+        let newText = '';
+        btnEncrypt.addEventListener('click',()=>{
+            let key = parseInt(keyInput.value);
+            for(const letter of inputText.value){
+                if(!alphaList.includes(letter.toLowerCase())){
+                    continue;
+                }
+                const indexLetter = alphaList.findIndex((item) => item === letter.toLowerCase());
+                let newIndex = indexLetter + key;
+                if(newIndex > 25){
+                    newIndex -= 26;
+                }
+                newText += alphaList[newIndex];
+                outputText.value = newText;
+            }
+            newText = '';
+            inputText.value = '';
+        });
+
+        btnDecrypt.addEventListener('click',()=>{
+            let key = parseInt(keyInput.value);
+            for(const letter of outputText.value){
+                if(!alphaList.includes(letter.toLowerCase())){
+                    continue;
+                }
+                const indexLetter = alphaList.findIndex((item) => item === letter.toLowerCase());
+                let newIndex = indexLetter - key;
+                if(newIndex < 0){
+                    newIndex += 26;
+                }
+                newText += alphaList[newIndex];
+                inputText.value = newText;
+            }
+            newText = '';
+            // inputText.value = '';
+        });
+    </script>
+</body>
+</html>

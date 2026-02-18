@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    <div>
+        <h1>Euclidean Algorithm</h1>
+        <input type="number" id="numA" placeholder="Enter first number"><br>
+        <input type="number" id="numB" placeholder="Enter second number"><br>
+        <button id="gcd">GCD</button><br>
+        <textarea id="result" placeholder="Result will appear here"></textarea>
+    <script>
+        const btnGCD = document.getElementById('gcd');
+        const inputA = document.getElementById('numA');
+        const inputB = document.getElementById('numB');
+        const result = document.getElementById('result');
+
+        function getGCD(a, b) {
+            while (b !== 0) {
+                let temp = b;
+                b = a % b;
+                a = temp;
+            }
+            return a;
+        }
+
+        btnGCD.addEventListener('click', () => {
+            const a = parseInt(inputA.value);
+            const b = parseInt(inputB.value);
+            if (isNaN(a) || isNaN(b)) {
+                result.value = 'Please enter valid numbers.';
+                return;
+            }
+            const gcd = getGCD(a, b);
+            result.value = `The GCD of ${a} and ${b} is ${gcd}.`;
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html>
+<body>
+    <h2>Substitution Cipher</h2>
+    <input id="input" placeholder="Type here...">
+    <button onclick="transform(true)">Encrypt</button>
+    <button onclick="transform(false)">Decrypt</button>
+    <p><strong>Result:</strong> <span id="output"></span></p>
+
+<script>
+    // This is your lookup table based on your image
+    const map = {
+        'a':'S', 'b':'C', 'c':'J', 'd':'A', 'e':'X', 'f':'U', 'g':'F', 'h':'B',
+        'i':'Q', 'j':'K', 'k':'T', 'l':'P', 'm':'R', 'n':'W', 'o':'E', 'p':'Z',
+        'q':'H', 'r':'V', 's':'L', 't':'I', 'u':'G', 'v':'Y', 'w':'D', 'x':'N',
+        'y':'M', 'z':'O',  // Note: 's' maps to 'L' in your table
+    };
+
+    // Create the reverse map automatically for decryption
+    const reverseMap = {};
+    for (let key in map) { reverseMap[map[key]] = key; }
+
+    function transform(isEncrypt) {
+        const text = document.getElementById('input').value.toLowerCase();
+        const currentMap = isEncrypt ? map : reverseMap;
+        
+        let result = "";
+        for (let char of text) {
+            // Replace if found in map, otherwise keep original (like spaces)
+            result += currentMap[char] || char;
+        }
+        document.getElementById('output').innerText = result;
+    }
+</script>
+</body>
+</html>

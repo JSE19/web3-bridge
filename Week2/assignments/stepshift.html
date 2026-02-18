@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    <script>
+        const cipher = {
+    // Encrypt: (Letter + Position)
+            encrypt: function(text) {
+                return text.toUpperCase().split('').map((char, index) => {
+                    if (!/[A-Z]/.test(char)) return char; // Skip spaces/punctuation
+                    
+                    const shift = index + 1;
+                    const code = char.charCodeAt(0) - 65; // A = 0, B = 1...
+                    const newCode = (code + shift) % 26;
+                    
+                    return String.fromCharCode(newCode + 65);
+                }).join('');
+            },
+
+    // Decrypt: (Letter - Position)
+            decrypt: function(text) {
+                return text.toUpperCase().split('').map((char, index) => {
+                    if (!/[A-Z]/.test(char)) return char;
+                    
+                    const shift = index + 1;
+                    const code = char.charCodeAt(0) - 65;
+                    // Add 26 before modulo to handle negative results gracefully
+                    const newCode = (code - (shift % 26) + 26) % 26;
+                    
+                    return String.fromCharCode(newCode + 65);
+                }).join('');
+            }
+        };
+
+        // Testing with your message
+        const encrypted = "XJHRFTNZHMZGAHIUETXZJNBWNUTRHEPOMDNBJMAUGORFAOIZOCC";
+        const decrypted = cipher.decrypt(encrypted);
+
+        console.log("Decrypted:", decrypted);
+    </script>
+</body>
+</html>

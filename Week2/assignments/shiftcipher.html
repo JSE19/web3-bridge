@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Progressive Cipher Wheel</title>
+    <style>
+        body { font-family: sans-serif; padding: 20px; line-height: 1.6; }
+        textarea { width: 100%; height: 60px; margin-bottom: 10px; }
+        .box { background: #f4f4f4; padding: 15px; border-radius: 8px; }
+    </style>
+</head>
+<body>
+
+    <h2>Cipher Wheel UI</h2>
+    <div class="box">
+        <label>Enter Message:</label><br>
+        <textarea id="userInput">XJHRFTNZHMZGAHIUETXZJNBWNUTRHEPOMDNBJMAUGORFAOIZOCC</textarea>
+        
+        <button onclick="process(true)">Encrypt</button>
+        <button onclick="process(false)">Decrypt</button>
+        
+        <p><strong>Result:</strong></p>
+        <div id="result" style="word-break: break-all; font-family: monospace; color: blue;"></div>
+    </div>
+
+<script>
+function process(isEncrypt) {
+    let input = document.getElementById("userInput").value.toUpperCase();
+    let result = "";
+
+    for (let i = 0; i < input.length; i++) {
+        let char = input[i];
+        
+        // Only process letters A-Z
+        if (char >= 'A' && char <= 'Z') {
+            let code = char.charCodeAt(0) - 65; // Convert A to 0, B to 1...
+            let shift = i + 1; // The "Progressive" part: 1, 2, 3...
+            
+            let newCode;
+            if (isEncrypt) {
+                // Encryption: Add the shift
+                newCode = (code + shift) % 26;
+            } else {
+                // Decryption: Subtract the shift
+                // We add 2600 to ensure we don't get a negative number 
+                // (2600 is just 26 * 100, a safe multiple)
+                newCode = (code - shift + 2600) % 26;
+            }
+            
+            result += String.fromCharCode(newCode + 65);
+        } else {
+            // If it's a space or punctuation, just leave it as is
+            result += char;
+        }
+    }
+    
+    document.getElementById("result").innerText = result;
+}
+</script>
+
+</body>
+</html>

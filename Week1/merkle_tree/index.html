@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Vanilla JS Merkle Tree</title>
+</head>
+<body>
+    <h1>Check the Console (F12) to see the Merkle Tree</h1>
+
+    <script>
+        
+        class MerkleTree {
+            constructor(data) {
+                this.data = data;
+            }
+
+            async hash(message) {
+                const msgUint8 = new TextEncoder().encode(message);
+                const hashBuffer = await crypto.subtle.digest('SHA-256', msgUint8);
+                const hashArray = Array.from(new Uint8Array(hashBuffer));
+                return hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
+            }
+
+            async generate() {
+                let nodes = await Promise.all(this.data.map(item => this.hash(item)));
+                console.log("Initial Leaves:", nodes);
+
+                while (nodes.length > 1) {
+                    if (nodes.length % 2 !== 0) nodes.push(nodes[nodes.length - 1]);
+                    let level = [];
+                    for (let i = 0; i < nodes.length; i += 2) {
+                        level.push(await this.hash(nodes[i] + nodes[i + 1]));
+                    }
+                    nodes = level;
+                    console.log("Next Level Up:", nodes);
+                }
+                return nodes[0];
+            }
+        }
+
+        
+        (async () => {
+            const data = ['Alice pays Bob 10', 'Bob pays Charlie 5', 'Charlie pays Dave 2'];
+            const tree = new MerkleTree(data);
+            const root = await tree.generate();
+            console.log("%cFinal Merkle Root:", "color: green; font-weight: bold;", root);
+        })();
+    </script>
+</body>
+</html>
