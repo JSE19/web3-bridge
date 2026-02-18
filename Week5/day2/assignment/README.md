@@ -1,6 +1,6 @@
 # Understanding Solidity Data Locations: Structs, Mappings, and Arrays
 
-In Solidity, managing gas costs and contract logic depends heavily on understanding where data lives. This guide breaks down the nuances of `storage`, `memory`, and `calldata`, specifically focusing on complex types.
+In Solidity, managing gas costs and contract logic depends heavily on understanding where data is stored. This guide shows us where `storage`, `memory`, and `calldata`.
 
 ---
 
@@ -13,7 +13,7 @@ Solidity offers three primary data locations. The choice depends on whether you 
 * **Location:** On the blockchain (permanent).
 * **Behavior:** Like a computer's hard drive. It persists between function calls and transactions.
 * **Cost:** High gas cost for writes.
-* **Types:** State variables (defined outside functions) are **always** in storage by default.
+* **Types:** State variables defined outside functions are **always** in storage by default.
 
 ### **Memory**
 
@@ -31,11 +31,7 @@ Solidity offers three primary data locations. The choice depends on whether you 
 
 ## 2. Why don't Mappings need a location specifier?
 
-You may have noticed that while you must specify `memory` or `storage` for arrays and structs inside functions, you **never** do so for mappings.
-
-### **The "Storage-Only" Nature**
-
-Mappings are unique because of how they are implemented. They use a Keccak-256 hash of the key to find the location of the value. Because they require a persistent "key-value" lookup table that could theoretically be infinite in size, **mappings can only exist in `storage`.**
+Mappings are unique because of how they are implemented. They use a Keccak-256 hash of the key to find the location of the value. Because they require a persistent "key-value" lookup table, **mappings can only exist in `storage`.**
 
 > **Note:** You cannot create a mapping inside a function as a local `memory` variable because there is no way to "allocate" a mapping in RAM. It must be a state variable or a reference to a state variable.
 
@@ -65,6 +61,6 @@ When you move these types between locations, the EVM performs different operatio
 
 ## Quick Reference Summary
 
-* **Arrays:** Can be `storage`, `memory`, or `calldata`. They have a `.length` property.
-* **Structs:** Custom groupings. Like arrays, they require a location specifier when used in functions.
-* **Mappings:** The "VIPs" of storage. No location specifier is needed because they have no home other than `storage`.
+* **Arrays:** Can be `storage`, `memory`, or `calldata`.
+* **Structs:** Like arrays, they require a location specifier when used in functions.
+* **Mappings:** No location specifier is needed because they have no home other than `storage`.
