@@ -22,12 +22,6 @@ contract SaveEther {
         emit DepositSuccessful(msg.sender, msg.value);
     }
 
-    function save(address sender, uint256 _value){
-        require(msg.sender != 0, "Can't deposit address zero value");
-
-        balances[msg.sender] = balances[msg.sender] + msg.value;
-    }
-
     function withdraw(uint256 _amount) external {
         require(msg.sender != address(0), "Address zero detected");
 
