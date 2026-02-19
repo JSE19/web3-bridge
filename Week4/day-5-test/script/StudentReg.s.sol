@@ -11,7 +11,6 @@ contract StudentRegScript is Script {
 
     function run() public {
         vm.startBroadcast();
-
         studentReg = new StudentReg();
 
         vm.stopBroadcast();
