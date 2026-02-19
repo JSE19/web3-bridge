@@ -13,6 +13,7 @@ contract Portal{
         uint8 id;
         string name;
         uint16 level;
+        uint256 createdAt;
     }
     Stud[] public students;
     uint8 studentId;
@@ -22,7 +23,9 @@ contract Portal{
         uint8 id;
         string name;
         address acct;
+        uint256 createdAt;
     }
+    
 
     Staff[] public staff;
     uint8 staffId;
@@ -45,7 +48,7 @@ contract Portal{
         staffId = staffId + 1;
 
         require(_acct != address(0) , "Account Must Not be 0");
-        Staff memory newStaff = Staff(staffId, _name,_acct);
+        Staff memory newStaff = Staff(staffId, _name,_acct, block.timestamp);
 
         staff.push(newStaff);
     }
@@ -82,11 +85,7 @@ contract Portal{
         require(success, "Fee payment failed");
 
         studentId = studentId + 1;
-        Stud memory student = Stud({
-            id: studentId,
-            name: _name,
-            level: _level
-        });
+        Stud memory student = Stud(studentId, _name,_level,block.timestamp);
 
         students.push(student);
 
