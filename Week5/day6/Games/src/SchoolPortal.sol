@@ -97,7 +97,7 @@ contract SchoolPortal{
             if(staff[i].id == _id){
                 //staffBalance[staff[i].acct] = balanceOf(staff[i].acct)
                 require(paymentToken.balanceOf(address(this)) >= SALARY, "Insufficient Funds");
-                require(staff[i].isSuspended, "Staff Suspended and cant be paid");
+                require(!staff[i].isSuspended, "Staff Suspended and cant be paid");
                 paymentToken.transfer(staff[i].acct, SALARY);
                 break;
 
