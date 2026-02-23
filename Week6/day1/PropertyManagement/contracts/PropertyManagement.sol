@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-// Compatible with OpenZeppelin Contracts ^5.5.0
+
 pragma solidity ^0.8.27;
 import {MyToken} from "./MyToken.sol";
 
@@ -56,7 +56,7 @@ contract PropertyManagement{
             if(props[i].id == _id){
                 address paymentAddress = props[i].propOwner;
                 uint256 price = props[i].price;
-                paymentToken.transfer(paymentAddress, price);
+                paymentToken.transferFrom(msg.sender,paymentAddress, price);
 
                 props[i].isSold = true;
                 break;
@@ -75,8 +75,13 @@ contract PropertyManagement{
         }
     }
 
-    function getUnsoldProperties() public external returns(props []){
-        Property[] memory active
-    }
+    // function getUnsoldProperties() external {
+    //     Property[] memory active;
+    //     for(uint8 i; i<props.length; i++){
+    //         if(props[i].isSold == false){
+    //             //return props[i];
+    //         }
+    //     }
+    // }
 
 }
