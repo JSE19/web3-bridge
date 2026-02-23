@@ -75,11 +75,15 @@ contract PropertyManagement{
         }
     }
 
-    // function getUnsoldProperties() external {
-    //     Property[] memory active;
+    function getAllProperties() external view returns(Property[] memory){
+        return props;
+    }
+
+    // function getUnsoldProperties() external returns(Property[] memory) {
+    //    // Property[] memory active;
     //     for(uint8 i; i<props.length; i++){
     //         if(props[i].isSold == false){
-    //             //return props[i];
+    //             return props[i];
     //         }
     //     }
     // }
