@@ -60,13 +60,13 @@ contract MultiSig{
         }
     }
 
-    function executeTransaction(uint8 _id) external{
+    function executeTransaction(uint8 _id) external onlyOwner(){
 
         for (uint8 i; i < transactions.length; i++) {
             if(transactions[i].id == _id){
                 require(transactions[i].id <= transactions.length, "Transaction Doesnt Exist");
                 require(!transactions[i].executed, "Transaction already Executed");
-                require(transactions[i].noOfConfirmation >= minSignersNeeded, "Signatories are below Standard");
+                require(transactions[i].noOfConfirmation == minSignersNeeded, "Signatories are below Standard");
     
                 transactions[i].executed =  true;
                 break;

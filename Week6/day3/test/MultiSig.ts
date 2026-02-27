@@ -51,16 +51,16 @@ describe("MultiSig", function(){
 
    });
 
-   it("Should Ensure Transaction si Not Executed Before", async function(){
-      const{multiSig,signer1,outsider} = await loadFixture(deploySigFixture);
+  //  it("Should Ensure Transaction is Not Executed Before", async function(){
+  //     const{multiSig,signer1,outsider} = await loadFixture(deploySigFixture);
 
-      const amount = hre.ethers.parseEther("2");
-      await multiSig.connect(signer1).submitTransaction(outsider,amount);
+  //     const amount = hre.ethers.parseEther("2");
+  //     await multiSig.connect(signer1).submitTransaction(outsider,amount);
 
       
 
 
-   })
+  //  })
 
  })
 
