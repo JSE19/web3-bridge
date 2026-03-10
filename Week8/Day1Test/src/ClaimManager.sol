@@ -1,0 +1,47 @@
+// SPDX-License-Identifier: MIT
+pragma solidity ^0.8.20;
+
+import "./VaultManager.sol";
+import "@openzeppelin/contracts/utils/cryptography/MerkleProof.sol";
+import "@openzeppelin/contracts/utils/cryptography/ECDSA.sol";
+
+contract ClaimManager is VaultManager {
+    bytes32 public merkleRoot;
+    mapping(address => bool) public claimed;
+
+    error Claimed();
+    error InvalidProof();
+
+    event MerkleRootSet(bytes32 indexed newRoot);
+    event Claim(address indexed claimant, uint256 amount);
+
+    function setMerkleRoot(bytes32 root) external onlyOwner {
+        merkleRoot = root;
+        emit MerkleRootSet(root);
+    }
+
+    function claim(bytes32[] calldata proof, uint256 amount) external whenNotPaused nonReentrant {
+        require(!claimed[msg.sender], Claimed());
+
+        
+        bytes32 leaf = keccak256(bytes.concat(keccak256(abi.encodePacked(msg.sender, amount))));
+        require(MerkleProof.verify(proof, merkleRoot, leaf), InvalidProof());
+
+        claimed[msg.sender] = true;
+        totalVaultValue -= amount;
+
+        (bool success, ) = payable(msg.sender).call{value: amount}("");
+        require(success, "Transfer failed");
+
+        emit Claim(msg.sender, amount);
+    }
+
+    
+    function verifySignature(
+        address signer,
+        bytes32 messageHash,
+        bytes memory signature
+    ) external pure returns (bool) {
+        return ECDSA.recover(messageHash, signature) == signer;
+    }
+}
