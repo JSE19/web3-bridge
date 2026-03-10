@@ -1,88 +1,98 @@
-// const helpers = require("@nomicfoundation/hardhat-network-helpers");
-// import { ethers } from "hardhat";
+import {ethers} from "hardhat";
+const helpers = require("@nomicfoundation/hardhat-network-helpers");
 
-// const main = async () => {
-//   const USDCAddress = "0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48";
-//   const DAIAddress = "0x6B175474E89094C44Da98b954EedeAC495271d0F";
-//   const UNIRouter = "0x7a250d5630B4cF539739dF2C5dAcb4c659F2488D";
-//   const USDCHolder = "0xf584f8728b874a6a5c7a8d4d387c9aae9172d621";
+export const main = async ()=>{
+    //NEEDED ADDRESSES
+    const thresHoldAddress = "0xCdF7028ceAB81fA0C6971208e83fa7872994beE5";
+    const shibaInuAddress = "0x95aD61b0a150d79219dCF64E1E6Cc01f0B64C4cE";
+    const impersonatorAddress = "0xF977814e90dA44bFA03b6295A0616a897441aceC";
+    const uniRouter = "0x7a250d5630B4cF539739dF2C5dAcb4c659F2488D";
+    
+
+    //STEP TO IMPERSONATE AN ADDRESS IN THE MAINNET
+    await helpers.impersonateAccount(impersonatorAddress);
+    const signer = await ethers.getSigner(impersonatorAddress);
+
+    //CREATING INSTANCES OF THE CONTRACTS
+    const threshHoldContract = await ethers.getContractAt("IERC20", thresHoldAddress,signer);
+    const shibaInuContract = await ethers.getContractAt("IERC20",shibaInuAddress,signer);
+    const Router = await ethers.getContractAt("IUniswapV2Router",uniRouter,signer);
+
+    //CHECK BALANCES OF IMPERSONATOR
+
+    console.log ("---------------------CHECK BALANCES ---------------------");
+
+    const thresHoldBalance = await threshHoldContract.balanceOf(impersonatorAddress);
+    const shibainuBalance = await shibaInuContract.balanceOf(impersonatorAddress);
+
+    console.log("ThresHold Balance: ", ethers.formatUnits(thresHoldBalance,18));
+    console.log("Shiba Inu Balance: ", ethers.formatUnits(shibainuBalance,18));
+
+    const factoryAddress = await Router.factory();
+    //console.log(factoryAddress)
+
+    const FactoryContract = await ethers.getContractAt("IUniswapV2Factory", factoryAddress, signer);
+
+    await FactoryContract.createPair(thresHoldAddress,shibaInuAddress)
+
+    const pairAddress = await FactoryContract.getPair(thresHoldAddress,shibaInuAddress);
+    console.log(pairAddress);
+
+    const pairContract = await ethers.getContractAt("IERC20", pairAddress, signer);
+    console.log( await pairContract.balanceOf(impersonatorAddress));
+
+    const amountADesired = ethers.parseUnits("10",18);
+    const amountBDesired = ethers.parseUnits("100",18);
+
+    const amountAMin = ethers.parseUnits("5",18);
+    const amountBMin = ethers.parseUnits("50",18);
+    const deadline = Math.floor(Date.now()/1000) + 60*10;
+    
+    (await threshHoldContract.approve(uniRouter,amountADesired)).wait;
+    (await shibaInuContract.approve(uniRouter,amountBDesired)).wait;
+
+    const trans = await Router.addLiquidity(thresHoldAddress,shibaInuAddress,amountADesired,amountBDesired,amountAMin,amountBMin,impersonatorAddress,deadline);
+
+    await trans.wait();
+
+    console.log("----------------------AFTER BALANCES------------------------");
+
+    const thresHoldBalanceAfter = await threshHoldContract.balanceOf(impersonatorAddress);
+    const shibainuBalanceAfter = await shibaInuContract.balanceOf(impersonatorAddress);
+    const pairBalance = await pairContract.balanceOf(impersonatorAddress);
+
+    console.log("THRESHOLD BALANCE AFTER: " , ethers.formatUnits(thresHoldBalanceAfter,18));
+    console.log("SHIBAINU BALANCE AFTER: ", ethers.formatUnits(shibainuBalanceAfter,18));
+    console.log("POOL BALANCE: ", ethers.formatUnits(pairBalance,18));
+
+    console.log("ALLOWANCE",await pairContract.allowance(impersonatorAddress, uniRouter));
+
+    const liquidityTakenOut = ethers.parseUnits("20",18);
+    (await pairContract.approve(uniRouter,liquidityTakenOut)).wait;
+
+    console.log("ALLOWANCE AFTER APPROVAL",await pairContract.allowance(impersonatorAddress, uniRouter));
+    console.log("TOTAL SUPPLY: ", await pairContract.totalSupply());
+
+    const transRemove = await Router.removeLiquidity(thresHoldAddress,shibaInuAddress,liquidityTakenOut,amountAMin,amountBMin,impersonatorAddress,deadline);
+
+    await transRemove.wait();
+
+    console.log("---------------------BALANCES AFTER LIQUIDITY REMOVAL-----------------------");
+
+     const thresHoldBalanceAfterLiqRemoval = await threshHoldContract.balanceOf(impersonatorAddress);
+    const shibainuBalanceAfterLiqRemoval = await shibaInuContract.balanceOf(impersonatorAddress);
+    const pairBalanceLiqRemoval = await pairContract.balanceOf(impersonatorAddress);
+
+    console.log("THRESHOLD BALANCE AFTER: " , ethers.formatUnits(thresHoldBalanceAfterLiqRemoval,18));
+    console.log("SHIBAINU BALANCE AFTER: ", ethers.formatUnits(shibainuBalanceAfterLiqRemoval,18));
+    console.log("POOL BALANCE: ", ethers.formatUnits(pairBalanceLiqRemoval,18));
 
 
-//     //  address tokenA,
-//     //     address tokenB,
-//     //     uint liquidity,
-//     //     uint amountAMin,
-//     //     uint amountBMin,
-//     //     address to,
-//     //     uint deadline
 
-  
-//   await helpers.impersonateAccount(USDCHolder);
-//   const impersonatedSigner = await ethers.getSigner(USDCHolder);
 
-// //   const amountUSDC = ethers.parseUnits("10000", 6);
-// //   const amountDAI = ethers.parseUnits("10000", 18);
-//     const liquidity = ethers.parseUnits("500",18);
-//   const amountUSDCMin = ethers.parseUnits("9000", 6);
-//   const amountDAIMin = ethers.parseUnits("9000", 18);
-//   const deadline = Math.floor(Date.now() / 1000) + 60 * 10;
 
-//   const USDC = await ethers.getContractAt(
-//     "IERC20",
-//     USDCAddress,
-//     impersonatedSigner,
-//   );
-//   const DAI = await ethers.getContractAt(
-//     "IERC20",
-//     DAIAddress,
-//     impersonatedSigner,
-//   );
-//   const ROUTER = await ethers.getContractAt(
-//     "IUniswapV2Router",
-//     UNIRouter,
-//     impersonatedSigner,
-//   );
-  
-
-// //   await USDC.approve(UNIRouter, amountUSDC);
-// //   await DAI.approve(UNIRouter, amountDAI);
-
-//   const usdcBalBefore = await USDC.balanceOf(impersonatedSigner.address);
-//   const daiBalBefore = await DAI.balanceOf(impersonatedSigner.address);
-//   console.log(
-//     "=================Before========================================",
-//   );
-
-//   console.log("USDC Balance before adding liquidity:", Number(usdcBalBefore));
-//   console.log("DAI Balance before adding liquidity:", Number(daiBalBefore));
-
-//   const tx = await ROUTER.removeLiquidity(
-//     USDCAddress,
-//     DAIAddress,
-//     amountUSDCMin,
-//     amountDAIMin,
-//     impersonatedSigner.address,
-//     deadline,
-//   );
-
-//   await tx.wait();
-
-//   const usdcBalAfter = await USDC.balanceOf(impersonatedSigner.address);
-//   const daiBalAfter = await DAI.balanceOf(impersonatedSigner.address);
-//   console.log("=================After========================================");
-//   console.log("USDC Balance after adding liquidity:", Number(usdcBalAfter));
-//   console.log("DAI Balance after adding liquidity:", Number(daiBalAfter));
-
-//   console.log("Liquidity added successfully!");
-//   console.log("=========================================================");
-//   const usdcUsed = usdcBalBefore - usdcBalAfter;
-//   const daiUsed = daiBalBefore - daiBalAfter;
-
-//   console.log("USDC USED:", ethers.formatUnits(usdcUsed, 6));
-//   console.log("DAI USED:", ethers.formatUnits(daiUsed, 18));
-// };
-
-// main().catch((error) => {
-//   console.error(error);
-//   process.exitCode = 1;
-// });
+}
+main().catch((error)=>{
+    console.error(error);
+    process.exitCode = 1;
+})
